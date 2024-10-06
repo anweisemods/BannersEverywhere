@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.anweisen.bannerseverywhere.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BannerItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

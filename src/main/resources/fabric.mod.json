@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "Banners Everywhere",
+  "description": "This mod adds the ability to place banners in new ways",
+  "authors": [
+    "anweisen"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/banners-everywhere",
+    "sources": "https://github.com/anweisemods/BannersEverywhere",
+    "issues": "https://github.com/anweisemods/BannersEverywhere/issues"
+  },
+  "license": "ARR",
+  "icon": "assets/bannerseverywhere/icon.png",
+  "entrypoints": {
+    "fabric-datagen": [
+      "net.anweisen.bannerseverywhere.BannersEverywhereDataGenerator"
+    ],
+    "main": [
+      "net.anweisen.bannerseverywhere.BannersEverywhereMod"
+    ],
+    "client": [
+      "net.anweisen.bannerseverywhere.client.BannersEverywhereClientMod"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "bannerseverywhere.mixins.json",
+      "environment": "*"
+    },
+    {
+      "config": "bannerseverywhere.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "minecraft": ">=1.20",
+    "java": ">=21"
+  }
+}
