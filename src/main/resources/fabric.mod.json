@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "bannerseverywhere",
   "version": "${version}",
   "name": "Banners Everywhere",
   "description": "This mod adds the ability to place banners in new ways",
