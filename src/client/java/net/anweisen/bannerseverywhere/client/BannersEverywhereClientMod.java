@@ -10,6 +10,7 @@ public class BannersEverywhereClientMod implements ClientModInitializer {
   @Override
   public void onInitializeClient() {
     BlockEntityRendererFactories.register(BannersEverywhereMod.SIDEWAYS_BANNER_TYPE, BannerBlockEntityRenderer::new);
+    BlockEntityRendererFactories.register(BannersEverywhereMod.SIDE_BANNER_TYPE, BannerBlockEntityRenderer::new);
     BlockEntityRendererFactories.register(BannersEverywhereMod.HANGING_BANNER_TYPE, BannerBlockEntityRenderer::new);
   }
 }

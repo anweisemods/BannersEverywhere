@@ -1,4 +1,4 @@
-package net.anweisen.bannerseverywhere.sideways;
+package net.anweisen.bannerseverywhere.side;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -20,9 +20,9 @@ import java.util.Map;
 
 /**
  * @author anweisen | https://github.com/anweisen
- * @since 1.0
+ * @since 1.1
  */
-public class SidewaysBannerBlock extends WallBannerBlock {
+public class SideBannerBlock extends WallBannerBlock {
 
   private static final double OUTLINE_WIDTH = 2, HEIGHT_MARGIN = 1.5;
   private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(ImmutableMap.of(
@@ -32,7 +32,7 @@ public class SidewaysBannerBlock extends WallBannerBlock {
     Direction.EAST, Block.createCuboidShape(0, HEIGHT_MARGIN, 8 - OUTLINE_WIDTH, 16, 16 - HEIGHT_MARGIN, 8 + OUTLINE_WIDTH))
   );
 
-  public SidewaysBannerBlock(DyeColor color, Settings settings) {
+  public SideBannerBlock(DyeColor color, Settings settings) {
     super(color, settings);
     this.setDefaultState(stateManager.getDefaultState().with(FACING, Direction.NORTH).with(OrientationHelper.ORIENTATION_PROPERTY, Direction.WEST));
   }
@@ -50,7 +50,7 @@ public class SidewaysBannerBlock extends WallBannerBlock {
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-    return new SidewaysBannerBlockEntity(pos, state, this.getColor());
+    return new SideBannerBlockEntity(pos, state, this.getColor());
   }
 
   @Override

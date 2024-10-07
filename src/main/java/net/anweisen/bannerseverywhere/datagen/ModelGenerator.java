@@ -24,12 +24,15 @@ public class ModelGenerator extends FabricModelProvider {
     BlockStateModelGenerator.BuiltinModelPool pool = generator.registerBuiltin(Identifier.ofVanilla("block/banner"), Blocks.OAK_PLANKS);
 
     for (DyeColor color : DyeColor.values()) {
-      pool.includeWithoutItem(BannersEverywhereMod.getHangingBannerBlock(color), BannersEverywhereMod.getSidewaysBannerBlock(color));
+      pool.includeWithoutItem(
+        BannersEverywhereMod.getHangingBannerBlock(color),
+        BannersEverywhereMod.getSidewaysBannerBlock(color),
+        BannersEverywhereMod.getSideBannerBlock(color)
+      );
     }
   }
 
   @Override
   public void generateItemModels(ItemModelGenerator generator) {
-
   }
 }

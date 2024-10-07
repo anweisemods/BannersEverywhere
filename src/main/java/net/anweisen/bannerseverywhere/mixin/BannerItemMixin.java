@@ -31,8 +31,16 @@ public abstract class BannerItemMixin extends BlockItem {
     if ((VerticallyAttachableBlockItem) (BlockItem) this instanceof BannerItem item) {
       Direction side = context.getSide();
 
-      if (side != Direction.UP && side != Direction.DOWN && context.getPlayer().isSneaking()) {
-        BlockState state = BannersEverywhereMod.getSidewaysBannerBlock(item.getColor()).getPlacementState(context);
+      if (side != Direction.UP && side != Direction.DOWN) {
+        double deltaY = context.getHitPos().getY() - context.getBlockPos().getY();
+        BlockState state;
+        if (deltaY < 0.25 || deltaY > 0.75) {
+          state = BannersEverywhereMod.getSideBannerBlock(item.getColor()).getPlacementState(context);
+        } else if (context.getPlayer().isSneaking()) {
+          state = BannersEverywhereMod.getSidewaysBannerBlock(item.getColor()).getPlacementState(context);
+        } else {
+          return;
+        }
         callback.setReturnValue(state);
       } else if (side == Direction.DOWN) {
         BlockState state = BannersEverywhereMod.getHangingBannerBlock(item.getColor()).getPlacementState(context);

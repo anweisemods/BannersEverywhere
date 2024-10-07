@@ -2,8 +2,11 @@ package net.anweisen.bannerseverywhere.client.mixin;
 
 import net.anweisen.bannerseverywhere.hanging.HangingBannerBlock;
 import net.anweisen.bannerseverywhere.hanging.HangingBannerBlockEntity;
+import net.anweisen.bannerseverywhere.side.SideBannerBlock;
+import net.anweisen.bannerseverywhere.side.SideBannerBlockEntity;
 import net.anweisen.bannerseverywhere.sideways.SidewaysBannerBlock;
 import net.anweisen.bannerseverywhere.sideways.SidewaysBannerBlockEntity;
+import net.anweisen.bannerseverywhere.util.OrientationHelper;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
@@ -48,26 +51,30 @@ public abstract class BannerBlockEntityRendererMixin implements BlockEntityRende
   private void render(BannerBlockEntity bannerBlockEntity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay, CallbackInfo callback) {
     BlockState blockState = bannerBlockEntity.getCachedState();
 
-    if (bannerBlockEntity instanceof SidewaysBannerBlockEntity && blockState.getBlock() instanceof SidewaysBannerBlock) {
-      try {
-        renderSidewaysBanner(bannerBlockEntity, tickDelta, matrixStack, vertexConsumerProvider, light, overlay, blockState);
-        callback.cancel();
-      } catch (Exception ex) { // dont crash the game
-        ex.printStackTrace();
+    try {
+      switch (bannerBlockEntity) {
+        case SidewaysBannerBlockEntity entity when blockState.getBlock() instanceof SidewaysBannerBlock -> {
+          renderSidewaysBanner(bannerBlockEntity, tickDelta, matrixStack, vertexConsumerProvider, light, overlay, blockState);
+          callback.cancel();
+        }
+        case SideBannerBlockEntity entity when blockState.getBlock() instanceof SideBannerBlock -> {
+          renderSideBanner(bannerBlockEntity, tickDelta, matrixStack, vertexConsumerProvider, light, overlay, blockState);
+          callback.cancel();
+        }
+        case HangingBannerBlockEntity entity when blockState.getBlock() instanceof HangingBannerBlock -> {
+          renderHangingBanner(bannerBlockEntity, tickDelta, matrixStack, vertexConsumerProvider, light, overlay, blockState);
+          callback.cancel();
+        }
+        default -> {
+        }
       }
-      return;
+    } catch (Exception ex) { // dont crash the game
+      ex.printStackTrace();
     }
 
-    if (bannerBlockEntity instanceof HangingBannerBlockEntity && blockState.getBlock() instanceof HangingBannerBlock) {
-      try {
-        renderHangingBanner(bannerBlockEntity, tickDelta, matrixStack, vertexConsumerProvider, light, overlay, blockState);
-        callback.cancel();
-      } catch (Exception ex) { // dont crash the game
-        ex.printStackTrace();
-      }
-    }
   }
 
+  @Unique
   private void renderSidewaysBanner(BannerBlockEntity bannerBlockEntity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay, BlockState blockState) {
     Direction facing = blockState.get(WallBannerBlock.FACING);
 
@@ -75,7 +82,7 @@ public abstract class BannerBlockEntityRendererMixin implements BlockEntityRende
     matrixStack.translate(0.5F, 0.5F, 0.5);
     matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
     matrixStack.translate(0, 0, 1);
-    int orientationInversion = blockState.get(SidewaysBannerBlock.ORIENTATION) != facing.rotateYCounterclockwise() ? -1 : 1;
+    int orientationInversion = blockState.get(OrientationHelper.ORIENTATION_PROPERTY) != facing.rotateYCounterclockwise() ? -1 : 1;
     matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));
     matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(orientationInversion * 90)); // originally: z-axis(north)
     matrixStack.translate(0, 0.166667, 0);
@@ -90,11 +97,41 @@ public abstract class BannerBlockEntityRendererMixin implements BlockEntityRende
     this.crossbar.render(matrixStack, vertexConsumer, light, overlay);
     this.banner.pivotY = -29.3333F;
     this.banner.pivotZ = .5F;
+    this.banner.pivotX = 0.3333F * orientationInversion;
 
     BlockPos blockPos = bannerBlockEntity.getPos();
     long time = bannerBlockEntity.getWorld().getTime();
     float swingAngle = MathHelper.sin((blockPos.getX() * 7L + blockPos.getY() * 9L + blockPos.getZ() * 13L + time + tickDelta) * 0.1F) * 2.0F;
-    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(swingAngle), -1 * orientationInversion, 0, 0);
+    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(swingAngle), -0.9f * orientationInversion, 0, 0);
+
+    BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, light, overlay, this.banner, ModelLoader.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns());
+    matrixStack.pop();
+    matrixStack.pop();
+  }
+
+  @Unique
+  private void renderSideBanner(BannerBlockEntity bannerBlockEntity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay, BlockState blockState) {
+    Direction facing = blockState.get(WallBannerBlock.FACING);
+
+    matrixStack.push();
+    matrixStack.translate(0.5F, -0.5, 0.5); // center and move to ceiling
+    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-facing.asRotation()));
+    int orientationInversion = blockState.get(OrientationHelper.ORIENTATION_PROPERTY) != facing.rotateYCounterclockwise() ? -1 : 1;
+    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(orientationInversion * 90));
+
+    matrixStack.push();
+    matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+    VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+    this.crossbar.render(matrixStack, vertexConsumer, light, overlay);
+    this.crossbar.xScale = 1.2F;
+
+    BlockPos blockPos = bannerBlockEntity.getPos();
+    long time = bannerBlockEntity.getWorld().getTime();
+    float swingAngle = ((float) Math.floorMod(blockPos.getX() * 7L + blockPos.getY() * 9L + blockPos.getZ() * 13L + time, 100L) + tickDelta) / 100.0F;
+    this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos(6.2831855F * swingAngle)) * 3.1415927F;
+    this.banner.pivotY = -30.0F;
+    this.banner.pivotX = -1.33333F * orientationInversion;
+    this.banner.pivotZ = 1.5F; // center the banner within block
 
     BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, light, overlay, this.banner, ModelLoader.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns());
     matrixStack.pop();
@@ -112,7 +149,6 @@ public abstract class BannerBlockEntityRendererMixin implements BlockEntityRende
     matrixStack.push();
     matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
     VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-    this.crossbar.pivotZ = -1.5F;
     this.crossbar.render(matrixStack, vertexConsumer, light, overlay);
 
     BlockPos blockPos = bannerBlockEntity.getPos();
@@ -120,6 +156,7 @@ public abstract class BannerBlockEntityRendererMixin implements BlockEntityRende
     float swingAngle = ((float) Math.floorMod(blockPos.getX() * 7L + blockPos.getY() * 9L + blockPos.getZ() * 13L + time, 100L) + tickDelta) / 100.0F;
     this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos(6.2831855F * swingAngle)) * 3.1415927F;
     this.banner.pivotY = -30.0F;
+    this.banner.pivotZ = 1.5F;
 
     BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, light, overlay, this.banner, ModelLoader.BANNER_BASE, true, bannerBlockEntity.getColorForState(), bannerBlockEntity.getPatterns());
     matrixStack.pop();

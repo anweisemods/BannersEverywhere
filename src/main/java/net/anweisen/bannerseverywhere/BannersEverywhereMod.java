@@ -2,6 +2,8 @@ package net.anweisen.bannerseverywhere;
 
 import net.anweisen.bannerseverywhere.hanging.HangingBannerBlock;
 import net.anweisen.bannerseverywhere.hanging.HangingBannerBlockEntity;
+import net.anweisen.bannerseverywhere.side.SideBannerBlock;
+import net.anweisen.bannerseverywhere.side.SideBannerBlockEntity;
 import net.anweisen.bannerseverywhere.sideways.SidewaysBannerBlock;
 import net.anweisen.bannerseverywhere.sideways.SidewaysBannerBlockEntity;
 import net.fabricmc.api.ModInitializer;
@@ -41,6 +43,31 @@ public class BannersEverywhereMod implements ModInitializer {
       WHITE_SIDEWAYS_BANNER, ORANGE_SIDEWAYS_BANNER, MAGENTA_SIDEWAYS_BANNER, LIGHT_BLUE_SIDEWAYS_BANNER, YELLOW_SIDEWAYS_BANNER,
       LIME_SIDEWAYS_BANNER, PINK_SIDEWAYS_BANNER, GRAY_SIDEWAYS_BANNER, LIGHT_GRAY_SIDEWAYS_BANNER, CYAN_SIDEWAYS_BANNER, PURPLE_SIDEWAYS_BANNER,
       BLUE_SIDEWAYS_BANNER, BROWN_SIDEWAYS_BANNER, GREEN_SIDEWAYS_BANNER, RED_SIDEWAYS_BANNER, BLACK_SIDEWAYS_BANNER
+    ).build()
+  );
+
+  public static final Block WHITE_SIDE_BANNER = registerSideBanner(DyeColor.WHITE, "white_side_banner", Blocks.WHITE_WALL_BANNER);
+  public static final Block ORANGE_SIDE_BANNER = registerSideBanner(DyeColor.ORANGE, "orange_side_banner", Blocks.ORANGE_WALL_BANNER);
+  public static final Block MAGENTA_SIDE_BANNER = registerSideBanner(DyeColor.MAGENTA, "magenta_side_banner", Blocks.MAGENTA_WALL_BANNER);
+  public static final Block LIGHT_BLUE_SIDE_BANNER = registerSideBanner(DyeColor.LIGHT_BLUE, "light_blue_side_banner", Blocks.LIGHT_BLUE_WALL_BANNER);
+  public static final Block YELLOW_SIDE_BANNER = registerSideBanner(DyeColor.YELLOW, "yellow_side_banner", Blocks.YELLOW_WALL_BANNER);
+  public static final Block LIME_SIDE_BANNER = registerSideBanner(DyeColor.LIME, "lime_side_banner", Blocks.LIME_WALL_BANNER);
+  public static final Block PINK_SIDE_BANNER = registerSideBanner(DyeColor.PINK, "pink_side_banner", Blocks.PINK_WALL_BANNER);
+  public static final Block GRAY_SIDE_BANNER = registerSideBanner(DyeColor.GRAY, "gray_side_banner", Blocks.GRAY_WALL_BANNER);
+  public static final Block LIGHT_GRAY_SIDE_BANNER = registerSideBanner(DyeColor.LIGHT_GRAY, "light_gray_side_banner", Blocks.LIGHT_GRAY_WALL_BANNER);
+  public static final Block CYAN_SIDE_BANNER = registerSideBanner(DyeColor.CYAN, "cyan_side_banner", Blocks.CYAN_WALL_BANNER);
+  public static final Block PURPLE_SIDE_BANNER = registerSideBanner(DyeColor.PURPLE, "purple_side_banner", Blocks.PURPLE_WALL_BANNER);
+  public static final Block BLUE_SIDE_BANNER = registerSideBanner(DyeColor.BLUE, "blue_side_banner", Blocks.BLUE_WALL_BANNER);
+  public static final Block BROWN_SIDE_BANNER = registerSideBanner(DyeColor.BROWN, "brown_side_banner", Blocks.BROWN_WALL_BANNER);
+  public static final Block GREEN_SIDE_BANNER = registerSideBanner(DyeColor.GREEN, "green_side_banner", Blocks.GREEN_WALL_BANNER);
+  public static final Block RED_SIDE_BANNER = registerSideBanner(DyeColor.RED, "red_side_banner", Blocks.RED_WALL_BANNER);
+  public static final Block BLACK_SIDE_BANNER = registerSideBanner(DyeColor.BLACK, "black_side_banner", Blocks.BLACK_WALL_BANNER);
+
+  public static final BlockEntityType<? extends BannerBlockEntity> SIDE_BANNER_TYPE = Registry.register(Registries.BLOCK_ENTITY_TYPE,
+    id("side_banner"), BlockEntityType.Builder.create(SideBannerBlockEntity::new,
+      WHITE_SIDE_BANNER, ORANGE_SIDE_BANNER, MAGENTA_SIDE_BANNER, LIGHT_BLUE_SIDE_BANNER, YELLOW_SIDE_BANNER,
+      LIME_SIDE_BANNER, PINK_SIDE_BANNER, GRAY_SIDE_BANNER, LIGHT_GRAY_SIDE_BANNER, CYAN_SIDE_BANNER, PURPLE_SIDE_BANNER,
+      BLUE_SIDE_BANNER, BROWN_SIDE_BANNER, GREEN_SIDE_BANNER, RED_SIDE_BANNER, BLACK_SIDE_BANNER
     ).build()
   );
 
@@ -90,6 +117,27 @@ public class BannersEverywhereMod implements ModInitializer {
     };
   }
 
+  public static Block getSideBannerBlock(DyeColor color) {
+    return switch (color) {
+      case WHITE -> WHITE_SIDE_BANNER;
+      case ORANGE -> ORANGE_SIDE_BANNER;
+      case MAGENTA -> MAGENTA_SIDE_BANNER;
+      case LIGHT_BLUE -> LIGHT_BLUE_SIDE_BANNER;
+      case YELLOW -> YELLOW_SIDE_BANNER;
+      case LIME -> LIME_SIDE_BANNER;
+      case PINK -> PINK_SIDE_BANNER;
+      case GRAY -> GRAY_SIDE_BANNER;
+      case LIGHT_GRAY -> LIGHT_GRAY_SIDE_BANNER;
+      case CYAN -> CYAN_SIDE_BANNER;
+      case PURPLE -> PURPLE_SIDE_BANNER;
+      case BLUE -> BLUE_SIDE_BANNER;
+      case BROWN -> BROWN_SIDE_BANNER;
+      case GREEN -> GREEN_SIDE_BANNER;
+      case RED -> RED_SIDE_BANNER;
+      case BLACK -> BLACK_SIDE_BANNER;
+    };
+  }
+
   public static Block getHangingBannerBlock(DyeColor color) {
     return switch (color) {
       case WHITE -> WHITE_HANGING_BANNER;
@@ -117,6 +165,10 @@ public class BannersEverywhereMod implements ModInitializer {
 
   private static SidewaysBannerBlock registerSidewaysBanner(DyeColor color, String name, Block wallBanner) {
     return Registry.register(Registries.BLOCK, id(name), new SidewaysBannerBlock(color, AbstractBlock.Settings.copy(wallBanner)));
+  }
+
+  private static SideBannerBlock registerSideBanner(DyeColor color, String name, Block wallBanner) {
+    return Registry.register(Registries.BLOCK, id(name), new SideBannerBlock(color, AbstractBlock.Settings.copy(wallBanner)));
   }
 
   private static HangingBannerBlock registerHangingBanner(DyeColor color, String name, Block wallBanner) {
